@@ -146,12 +146,21 @@ class BacktrackingBot(PlayerHandle):
 
 		# initialize the hand dict using the cards list
 		for c in cards:
-			hand[c] = hand.get(c, 0) + 1
+			if c not in hand:
+				hand[c] = 0
+			hand[c] += 1
 
 		# We'll need a reference to our position and our opponent's when simulating 
 		# moves in the future 
 		self.pos = pos
-		self.opp_pos = Position.NORTH if pos == Position.SOUTH else Position.SOUTH
+		if pos == Position.NORTH:
+			self.opp_pos = Position.SOUTH
+		elif pos == Position.SOUTH:
+			self.opp_pos = Position.NORTH
+		elif pos == Position.EAST:
+			self.opp_pos = Position.WEST
+		else:
+			self.opp_pos = Position.EAST
 
 		# This is how many moves into the future we'll search 
 		searchLimit = 2
@@ -251,11 +260,14 @@ class BacktrackingBot(PlayerHandle):
 
 		# This loop is just to check to see if there are any
 		# nonzero card counts in your hand
-		if sum((hand[c] != 0) for c in hand.keys()) == 0: 
-			return getScore(board, self.pos)
+		foundNonZero = False
+		for c in hand.keys():
+			if hand[c] != 0:
+				foundNonZero = True
+				break 
 
 		# Base case: depth == limit or you don't have any more cards
-		if depth >= limit:
+		if depth >= limit or not foundNonZero:
 			return getScore(board, self.pos)
 
 		# So you want to iteratively find the best score right?

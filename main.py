@@ -10,6 +10,7 @@ import random
 import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 from multiprocessing import Process, Queue
+from myBot import myJankBot
 
 def createPlayer(cardDeck, handSize, pos, handle):
 	cards = []
@@ -183,9 +184,9 @@ def multiProcessingHelper(numRuns, q, northBot, southBot):
 def runSim():
 	# parameters
 	util.setLogging(False)
-	numRuns = 100
-	northBot = MaxBot(Position.SOUTH)
-	southBot = BacktrackingBot(Position.NORTH)
+	numRuns = 10
+	northBot = BacktrackingBot(Position.SOUTH)
+	southBot = MaxDiffBot(Position.NORTH)
 	
 	# track winner
 	numNorth = 0
@@ -204,7 +205,7 @@ def runSim():
 	cardsPlayedCounting = Position.SOUTH
 	
 	print("Number of Runs:", numRuns)
-	for i in range(numRuns):
+	for i in range(1, numRuns+1):
 		# play game
 		start = timer()
 		players, finalBoards = playGame(10, 10, northBot, southBot)
@@ -333,4 +334,4 @@ def playGame(numRounds, handSize, northBot, southBot):
 	return [players, boardList]
 
 if __name__ == "__main__":
-	multSim()
+	runSim()
